@@ -1,0 +1,5 @@
+== 1.0.0
+
+  * Migrated code from lk.midi
+  * Classes: In, Out, Message, Note
+

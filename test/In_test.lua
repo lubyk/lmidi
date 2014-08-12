@@ -1,28 +1,30 @@
 --[[------------------------------------------------------
 
-  midi.In test
+  lmidi.In test
   ------------
 
   ...
 
 --]]------------------------------------------------------
-require 'lubyk'
+local lmidi  = require 'lmidi'
+local lut    = require 'lut'
+local In     = lmidi.In
+local should = lut.Test 'lmidi.In'
 
-local should = test.Suite('midi.In')
 local withUser = should:testWithUser()
 
 function should.autoLoad()
-  assertTrue(midi.In)
+  assertTrue(lmidi.In)
 end
 
 function should.raiseErrorOnBadPort()
   assertError("Invalid port number 88.", function()
-    midi.In(88)
+    In(88)
   end)
 end
 
 function withUser.should.openPort(t)
-  local mi = midi.In(3)
+  local mi = In(3)
   assertTrue(mi)
   t.continue = false
   local i= 0
@@ -40,7 +42,7 @@ function withUser.should.openPort(t)
 end
 
 function withUser.should.createVirtualPort(t)
-  local mi = midi.In('foo')
+  local mi = In('foo')
   assertTrue(mi)
   print('Created virtual port', mi:portName(), 'please produce midi events...')
   t.continue = false
@@ -59,9 +61,9 @@ function withUser.should.createVirtualPort(t)
 end
 
 function should.listInputPorts()
-  local inputs = midi.In.ports()
+  local inputs = In.ports()
   assertType('table', inputs)
   assertType('string', inputs[1])
 end
 
-test.all()
+should:test()
