@@ -11,10 +11,16 @@ local core  = require 'lmidi.core'
 local lib   = core.In
 
 local Message = lmidi.Message
+local yield = coroutine.yield
 
 lib.mode   = 'thread'
 local private = {}
-local lens
+local lens, ignoreType
+local SPECIAL_TYPES = {
+  sysex = true,
+  time  = true,
+  sense = true,
+}
 
 local new = lib.new
 function lib.new(port_or_name, func)
@@ -22,6 +28,11 @@ function lib.new(port_or_name, func)
   if port_or_name then
     self:openPort(port_or_name)
   end
+  self.ignored_types = {
+    sysex = true,
+    time  = true,
+    sense = true,
+  }
   return self
 end
 
@@ -50,8 +61,11 @@ function private:start()
       local super   = self.super
       local read_fd = self:fd()
       while true do
-        lens.waitRead(read_fd)
-        self:rawReceive(super:pop())
+        if not super:hasMessage() then
+          yield('read', read_fd)
+        else
+          self:rawReceive(super:pop())
+        end
       end
     end)
     -- Also use dub's error handler for errors in Lua during
@@ -70,6 +84,27 @@ function lib:pull()
   end
 end
 
+-- # Methods
+
+local function ignoreType(self, type_name, value)
+  assert(SPECIAL_TYPES[type_name], "'"..type_name.."' is not a valid special midi type (sysex, time, sense).")
+  local ignored_types = self.ignored_types
+  ignored_types[type_name] = value
+  self:ignoreTypes(ignored_types.sysex, ignored_types.time, ignored_types.sense)
+end
+
+-- Start receiving special type `type_name` ('sysex', 'time', 'sense').
+function lib:receiveType(type_name)
+  ignoreType(self, type_name, false)
+end
+
+-- Stop receiving special type `type_name` ('sysex', 'time', 'sense').
+function lib:ignoreType(type_name)
+  ignoreType(self, type_name, true)
+end
+
+-- # Callbacks
+--
 -- Default dummy function
 function lib:receive(msg)
 end

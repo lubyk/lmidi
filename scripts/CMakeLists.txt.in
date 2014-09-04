@@ -11,18 +11,27 @@ set(INSTALL_PATH "${CMAKE_BINARY_DIR}/lib" CACHE STRING "Install directory path"
 
 set(LINK_LIBS {{ lub.join(def.libraries or {}, ' ') }})
 
-{% local platlibs = def.platlibs or {} %}
+{%
+local platlibs = def.platlibs or {}
+local platdefs = def.platdefs or {}
+%}
 if(UNIX)
   if(APPLE)
     set(PLAT "macosx")
-    add_definitions(-D__MACOSX_CORE__)
+{% if platdefs.macosx then 
+for _, k in ipairs(platdefs.macosx) do %}
+    add_definitions(-D{{k}})
+{% end; end %}
     set(LINK_FLAGS "-bundle -undefined dynamic_lookup -all_load")
 {% if platlibs.macosx then %}
     set(LINK_LIBS "{{ lub.join(platlibs.macosx, ' ') }}")
 {% end %}
   else(APPLE)
     set(PLAT "linux")
-    add_definitions(-D__LINUX_ALSA__)
+{% if platdefs.linux then 
+for _, k in ipairs(platdefs.linux) do %}
+    add_definitions(-D{{k}})
+{% end; end %}
     set(LINK_FLAGS "-shared")
 {% if platlibs.linux then %}
     set(LINK_LIBS "{{ lub.join(platlibs.linux, ' ') }}")
@@ -31,7 +40,10 @@ if(UNIX)
 else(UNIX)
   if(WIN32)
     set(PLAT "win32")
-    add_definitions(-D__WINDOWS_MM__)
+{% if platdefs.win32 then 
+for _, k in ipairs(platdefs.win32) do %}
+    add_definitions(-D{{k}})
+{% end; end %}
 {% if platlibs.win32 then %}
     set(LINK_LIBS "{{ lub.join(platlibs.win32, ' ') }}")
 {% end %}
@@ -59,7 +71,7 @@ set(core "${MODULE_NAME}_core")
 
 include_directories({{ lub.join(def.includes, ' ') }})
 
-file(GLOB CORE_SOURCES src/rtmidi/*.cpp src/*.c src/bind/dub/*.cpp src/bind/*.cpp src/*.cpp
+file(GLOB CORE_SOURCES src/*.c src/bind/dub/*.cpp src/bind/*.cpp src/*.cpp
   src/${PLAT}/*.cpp src/${PLAT}/*.mm)
 
 add_library(${core} MODULE ${CORE_SOURCES})

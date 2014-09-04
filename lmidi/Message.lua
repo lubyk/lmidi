@@ -34,8 +34,8 @@ function lib.new(a, b, c)
       return {
         type = 'Clock',
         op   = 'Song',
-        -- 1 position step = 6 midi clocks
-        position = b * 128 + c,
+        -- Transform 1 position step = 6 midi clocks
+        position = c * 128 + b,
       }
     else
       return {

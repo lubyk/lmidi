@@ -16,7 +16,7 @@ if(UNIX)
     set(PLAT "macosx")
     add_definitions(-D__MACOSX_CORE__)
     set(LINK_FLAGS "-bundle -undefined dynamic_lookup -all_load")
-    set(LINK_LIBS "stdc++ -framework CoreMIDI -framework CoreAudio" objc)
+    set(LINK_LIBS "stdc++ -framework CoreMIDI -framework CoreAudio objc")
   else(APPLE)
     set(PLAT "linux")
     add_definitions(-D__LINUX_ALSA__)
@@ -48,9 +48,9 @@ add_custom_target(${MODULE_NAME} true)
 # --------------------------------------------------------------
 set(core "${MODULE_NAME}_core")
 
-include_directories(include src/bind src src/rtmidi)
+include_directories(include src/bind src)
 
-file(GLOB CORE_SOURCES src/rtmidi/*.cpp src/*.c src/bind/dub/*.cpp src/bind/*.cpp src/*.cpp
+file(GLOB CORE_SOURCES src/*.c src/bind/dub/*.cpp src/bind/*.cpp src/*.cpp
   src/${PLAT}/*.cpp src/${PLAT}/*.mm)
 
 add_library(${core} MODULE ${CORE_SOURCES})

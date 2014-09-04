@@ -16,6 +16,7 @@ description = {
 dependencies = {
   "lua >= 5.1, < 5.3",
   "lub >= 1.0.3, < 2.0",
+  "lens ~> 1.0",
 }
 build = {
   type = 'builtin',
@@ -29,12 +30,13 @@ build = {
     -- C module
     ['lmidi.core'     ] = {
       sources = {
+        'src/RtMidi.cpp',
         'src/bind/dub/dub.cpp',
         'src/bind/lmidi_core.cpp',
         'src/bind/lmidi_In.cpp',
         'src/bind/lmidi_Out.cpp',
       },
-      incdirs   = {'include', 'src/bind', 'src', 'src/rtmidi'},
+      incdirs   = {'include', 'src/bind', 'src'},
       libraries = {'stdc++'},
     },
   },
@@ -43,6 +45,7 @@ build = {
       modules = {
         ['lmidi.core'] = {
           libraries = {'stdc++', 'rt'},
+          defines   = {'__LINUX_ALSA__'},
         },
       },
     },
@@ -50,6 +53,7 @@ build = {
       modules = {
         ['lmidi.core'] = {
           libraries = {'stdc++', '-framework CoreMIDI', '-framework CoreAudio', 'objc'},
+          defines   = {'__MACOSX_CORE__'},
         },
       },
     },

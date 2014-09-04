@@ -14,8 +14,9 @@ local def = {
     license  = "MIT",
   },
 
-  includes  = {'include', 'src/bind', 'src', 'src/rtmidi'},
+  includes  = {'include', 'src/bind', 'src'},
   libraries = {'stdc++'},
+
   platlibs = {
     linux   = {'stdc++', 'rt'},
     macosx  = {
@@ -25,6 +26,12 @@ local def = {
       'objc',
     },
   },
+
+  platdefs = {
+    linux  = {'__LINUX_ALSA__'},
+    macosx = {'__MACOSX_CORE__'},
+    win32  = {'__WINDOWS_MM__'},
+  }
   -- not needed on Mac OS X
   -- cmake_extra = [[
   -- add_subdirectory(src/glew)

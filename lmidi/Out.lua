@@ -13,10 +13,14 @@ local lib   = core.Out
 local private = {}
 
 local new = lib.new
-function lib.new(port_or_name)
+function lib.new(port_or_name, create_virtual)
   local self = new()
   if port_or_name then
-    self:openPort(port_or_name)
+    if create_virtual then
+      self:virtualPort(port_or_name)
+    else
+      self:openPort(port_or_name)
+    end
   end
   return self
 end

@@ -89,6 +89,9 @@ idx = idx + 1 %}
 {% if def.platlibs[plat] then %}
           libraries = {'{{ lub.join(def.platlibs[plat], "', '") }}'},
 {% end %}
+{% if def.platdefs and def.platdefs[plat] then %}
+          defines   = {'{{ lub.join(def.platdefs[plat], "', '") }}'},
+{% end %}
         },
       },
     },
